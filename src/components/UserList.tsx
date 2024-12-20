@@ -207,7 +207,7 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
       ) : (
         <DataTable
           data={users}
-          columns={columns}
+          columns={columns || []}
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
@@ -217,7 +217,7 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSubmit={isUpdate ? handleUpdateUser : handleAddUser} 
-          initialData={selectedUser}
+          initialData={selectedUser || undefined}
           isUpdate={isUpdate}
         />
       {isDeleteModalOpen && (
