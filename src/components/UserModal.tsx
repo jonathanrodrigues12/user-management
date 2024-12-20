@@ -7,8 +7,8 @@ interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (user: { name: string; email: string; password?: string }) => Promise<void>;
-  initialData?: { id?: string; name: string; email: string };
-  isUpdate: boolean; // Flag para definir se é criação ou atualização
+  initialData?: { id?: string; name: string; email: string }; 
+  isUpdate: boolean;
 }
 
 export default function UserModal({ isOpen, onClose, onSubmit, initialData, isUpdate }: UserModalProps) {
@@ -53,8 +53,8 @@ export default function UserModal({ isOpen, onClose, onSubmit, initialData, isUp
 
     try {
       const payload = isUpdate
-        ? { name, email } // Atualização não exige senha
-        : { name, email, password }; // Criação exige senha
+        ? { name, email } 
+        : { name, email, password }; 
 
       await onSubmit(payload);
 

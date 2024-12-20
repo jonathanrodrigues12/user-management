@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import DataTable from "@/components/DataTable";
 import UserModal from "@/components/UserModal";
-import { API_URL } from "@/config/api";
-import { PencilIcon } from "@heroicons/react/24/outline";
-
+import { API_TOKEN, API_URL } from "@/config/api";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 interface User {
   id: string;
@@ -27,23 +27,17 @@ export default function UserList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false); // Flag para saber se é atualização
+  const [isUpdate, setIsUpdate] = useState(false); 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchUsers = async (page: number) => {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
-      if (!token) throw new Error("Token não encontrado");
-
       const response = await fetch(`${API_URL}/users?page=${page}&limit=10`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${API_TOKEN}`,
         },
       });
       const data: ApiResponse = await response.json();
@@ -57,84 +51,105 @@ export default function UserList() {
     }
   };
 
-  const fetchUserById = async (id: string) => {
-    setLoading(true);
-
-    try {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
-      if (!token) throw new Error("Token não encontrado");
-
-      const response = await fetch(`${API_URL}/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao buscar os dados do usuário.");
-      }
-
-      const data: User = await response.json();
-      setSelectedUser(data); // Preenche o estado com os dados do usuário
-      setIsUpdate(true); // Define a flag para atualização
-      setIsModalOpen(true); // Abre o modal
-    } catch (error) {
-      console.error(error.message || "Erro ao buscar usuário.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddUser = async (user: { name: string; email: string; password: string }) => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1];
-
-    if (!token) throw new Error("Token não encontrado");
+const handleAddUser = async (user: { name: string; email: string; password?: string }) => {
+  try {
+    const payload = { ...user }; 
 
     const response = await fetch(`${API_URL}/users/create-new-user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${API_TOKEN}`,
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao criar o usuário.");
+      throw new Error("Error creating user.");
     }
 
-    await fetchUsers(currentPage); // Recarrega a lista de usuários
+    toast.success("User created successfully!");
+    setIsModalOpen(false);
+    fetchUsers(currentPage);
+  } catch (error: any) {
+    toast.error(error.message || "Error creating user.");
+  }
+};
+
+  const fetchUserById = async (id: string) => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error fetching user data.");
+      }
+
+      const data: User = await response.json();
+      setSelectedUser(data); 
+      setIsUpdate(true);
+      setIsModalOpen(true); 
+    } catch (error) {
+      throw new Error("Error fetching user data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const response = await fetch(`${API_URL}/users/${selectedUser.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir o usuário.");
+      }
+
+      toast.success("User deleted successfully!");
+      setIsDeleteModalOpen(false);
+      fetchUsers(currentPage);
+    } catch (error) {
+      toast.error(error.message || "Failed to delete user.");
+    }
   };
 
   const handleUpdateUser = async (user: { name: string; email: string }) => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1];
-
-    if (!token) throw new Error("Token não encontrado");
-
+  try {
     const response = await fetch(`${API_URL}/users/${selectedUser?.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${API_TOKEN}`,
       },
       body: JSON.stringify(user),
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao atualizar o usuário.");
+      throw new Error("Error updating user.");
     }
 
-    await fetchUsers(currentPage); // Recarrega a lista de usuários
+    toast.success("User updated successfully!");
+    setIsModalOpen(false);
+    fetchUsers(currentPage);
+  } catch (error: any) {
+    toast.error(error.message || "Error updating user.");
+  }
+};
+
+  const handleOpenDeleteModal = (user: User) => {
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -154,12 +169,20 @@ export default function UserList() {
       key: "action",
       header: "Action",
       render: (_: any, row: User) => (
-        <button
-          onClick={() => fetchUserById(row.id)}
-          className="rounded-md bg-gray-200 p-2 hover:bg-gray-300"
-        >
-          <PencilIcon className="h-5 w-5 text-gray-600" />
-        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => fetchUserById(row.id)}
+            className="rounded-md bg-gray-200 p-2 hover:bg-gray-300"
+          >
+            <PencilIcon className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => handleOpenDeleteModal(row)}
+            className="rounded-md bg-gray-200 p-2 hover:bg-red-300"
+          >
+            <TrashIcon className="h-5 w-5 text-red-600" />
+          </button>
+        </div>
       ),
     },
   ];
@@ -191,12 +214,33 @@ export default function UserList() {
         />
       )}
       <UserModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={isUpdate ? handleUpdateUser : handleAddUser}
-        initialData={selectedUser}
-        isUpdate={isUpdate} // Passa a flag para o modal
-      />
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={isUpdate ? handleUpdateUser : handleAddUser} 
+          initialData={selectedUser}
+          isUpdate={isUpdate}
+        />
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-bold mb-4">Do you really want to delete this user?</h2>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-300"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+                onClick={handleDeleteUser}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
