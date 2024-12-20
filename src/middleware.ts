@@ -10,5 +10,5 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*"], // Exemplo de rotas protegidas
+  matcher: ["/dashboard/:path*", "/user/:path*"], // Exemplo de rotas protegidas
 };
