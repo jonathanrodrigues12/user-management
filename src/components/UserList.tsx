@@ -157,14 +157,8 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
   }, [currentPage]);
 
   const columns = [
-    { key: "id", header: "ID" },
     { key: "name", header: "Nome" },
     { key: "email", header: "E-mail" },
-    {
-      key: "created_at",
-      header: "Data de Criação",
-      render: (value: string) => new Date(value).toLocaleDateString(),
-    },
     {
       key: "action",
       header: "Action",
@@ -207,7 +201,7 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
       ) : (
         <DataTable
           data={users}
-          columns={columns || []}
+          columns={columns }
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
