@@ -1,5 +1,5 @@
 "use client";
-
+import UserModal from "@/components/UserModal";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -12,6 +12,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+    const handleAddUser = async (user: { name: string; email: string; password: string }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/create-new-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error creating user.");
+      }
+
+      toast.success("User registered successfully!");
+      setIsModalOpen(false); // Fecha o modal após o cadastro
+    } catch (error: any) {
+      toast.error(error.message || "Failed to register user.");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,11 +114,20 @@ export default function LoginPage() {
         </form>
         <p className="text-sm text-center text-gray-600">
           Não tem uma conta?{" "}
-          <a href="/register" className="text-blue-600 hover:underline">
+          <button
+            onClick={() => setIsModalOpen(true)} // Abre o modal de cadastro
+            className="text-blue-600 hover:underline"
+          >
             Cadastre-se
-          </a>
+          </button>
         </p>
       </div>
+       {/* Modal de Cadastro */}
+      <UserModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddUser} 
+      />
     </div>
   );
 }
