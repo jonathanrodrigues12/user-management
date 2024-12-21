@@ -5,7 +5,7 @@ import React, { ReactNode } from "react";
 interface Column<T> {
   key: keyof T;
   header: string;
-  render?: (value: any, row: T) => ReactNode;
+  render?: (value: unknown, row: T) => ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -15,6 +15,7 @@ interface DataTableProps<T> {
   currentPage: number;
   onPageChange: (page: number) => void;
 }
+
 
 export default function DataTable<T>({
   data,

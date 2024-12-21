@@ -71,8 +71,12 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
     toast.success("User created successfully!");
     setIsModalOpen(false);
     fetchUsers(currentPage);
-  } catch (error: any) {
-    toast.error(error.message || "Error creating user.");
+  } catch (error: unknown) {
+       if (error instanceof Error) {
+          toast.error(error.message || "An error occurred while list the user.");
+        } else {
+          toast.error("An unknown error occurred.");
+        }
   }
 };
 
@@ -94,8 +98,12 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
       setSelectedUser(data); 
       setIsUpdate(true);
       setIsModalOpen(true); 
-    } catch (error) {
-      throw new Error("Error fetching user data.");
+    } catch (error: unknown) {
+       if (error instanceof Error) {
+          toast.error(error.message || "An error occurred while featch the user.");
+        } else {
+          toast.error("An unknown error occurred.");
+        }
     } finally {
       setLoading(false);
     }
@@ -119,8 +127,12 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
       toast.success("User deleted successfully!");
       setIsDeleteModalOpen(false);
       fetchUsers(currentPage);
-    } catch (error) {
-      toast.error(error.message || "Failed to delete user.");
+    } catch (error: unknown) {
+       if (error instanceof Error) {
+          toast.error(error.message || "An error occurred while deleted the user.");
+        } else {
+          toast.error("An unknown error occurred.");
+        }
     }
   };
 
@@ -142,8 +154,12 @@ const handleAddUser = async (user: { name: string; email: string; password?: str
     toast.success("User updated successfully!");
     setIsModalOpen(false);
     fetchUsers(currentPage);
-  } catch (error: any) {
-    toast.error(error.message || "Error updating user.");
+  } catch (error: unknown) {
+       if (error instanceof Error) {
+          toast.error(error.message || "An error occurred while updating the user.");
+        } else {
+          toast.error("An unknown error occurred.");
+        }
   }
 };
 

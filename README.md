@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🛠️ **User Management Dashboard**
 
-First, run the development server:
+## 📚 **Descrição do Projeto**
+Este projeto é um painel de gerenciamento de usuários desenvolvido com **Next.js**, **TypeScript**, **TailwindCSS** e integrações com APIs protegidas por autenticação JWT. Ele inclui funcionalidades como:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 📝 **Listagem de Usuários** com paginação dinâmica.
+- 🛡️ **Autenticação JWT** para proteger rotas.
+- ➕ **Criação de Usuários** com modal dinâmico.
+- ✏️ **Edição de Usuários** com carregamento de dados.
+- 🗑️ **Exclusão de Usuários** com confirmação.
+- 📊 **Tabela Dinâmica Reutilizável**.
+
+---
+
+## 🚀 **Tecnologias Utilizadas**
+- **Next.js**
+- **TypeScript**
+- **TailwindCSS**
+- **React Hot Toast**
+- **Heroicons**
+- **Node.js (Backend API)**
+
+---
+
+## 🏗️ **Estrutura do Projeto**
+```plaintext
+src/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── login/
+│   │   ├── page.tsx
+│   │   ├── UserModal.tsx
+│   │   └── ProtectedLayout.tsx
+├── components/
+│   ├── DataTable.tsx
+│   ├── UserModal.tsx
+│   └── ProtectedLayout.tsx
+├── config/
+│   ├── api.ts
+├── types/
+│   ├── types.ts
+├── public/
+│   ├── logo.png
+├── pages/
+│   ├── dashboard.tsx
+│   ├── user.tsx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📦 **Instalação e Execução**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/seu-repositorio.git
+   cd seu-repositorio
+   ```
 
-## Learn More
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Configure as variáveis de ambiente:**  
+   Crie um arquivo `.env` na raiz do projeto:
+   ```env
+   API_URL= http://localhost:3000
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Execute o projeto:**
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. **Acesse no navegador:**  
+   ```plaintext
+   http://localhost:30001
+   ```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔑 **Autenticação**
+- Ao realizar login, um token JWT será armazenado nos **cookies**.
+- Rotas protegidas redirecionam automaticamente para o login caso o token expire.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧩 **Principais Componentes**
+### **1. UserModal**
+- Reutilizável para **criação** e **edição** de usuários.
+- Validação de **e-mail** e **senha forte**.
+
+### **2. DataTable**
+- Componente genérico para renderizar tabelas com paginação dinâmica.
+
+### **3. ProtectedLayout**
+- Define o layout das rotas protegidas com menu lateral e controle de acesso.
+
+---
+
+## 🐞 **Erros Comuns**
+- **Token não encontrado:** Certifique-se de que o token JWT está armazenado corretamente.
+- **API não responde:** Verifique se o servidor backend está rodando.
+
+---

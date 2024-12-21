@@ -60,8 +60,12 @@ export default function UserModal({ isOpen, onClose, onSubmit, initialData, isUp
 
       toast.success(isUpdate ? "User updated successfully!" : "User created successfully!");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred while saving the user.");
+    } catch (error: unknown) {
+       if (error instanceof Error) {
+          toast.error(error.message || "An error occurred while saving the user.");
+        } else {
+          toast.error("An unknown error occurred.");
+        }
     }
   };
 
